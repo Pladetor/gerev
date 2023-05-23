@@ -1,15 +1,17 @@
 from pathlib import Path
-import os
+from platform import system
+from os import environ
 
-IS_IN_DOCKER = os.environ.get('DOCKER_DEPLOYMENT', False)
+from consts import OperatingSystemsPlatforms, Paths, EnvironmentVariables
 
-if os.name == 'nt':
-    STORAGE_PATH = Path(".gerev\\storage")
-else:
-    STORAGE_PATH = Path('/opt/storage/') if IS_IN_DOCKER else Path(f'/home/{os.getlogin()}/.gerev/storage/')
+STORAGE_PATHS = {OperatingSystemsPlatforms.WINDOWS: Paths.Storage.WINDOWS,
+                 OperatingSystemsPlatforms.MAC: Paths.Storage.MAC,
+                 OperatingSystemsPlatforms.LINUX: Paths.Storage.LINUX}
 
-if not STORAGE_PATH.exists():
-    STORAGE_PATH.mkdir(parents=True)
+IS_IN_DOCKER = environ.get(EnvironmentVariables.DOCKER_DEPLOYMENT, False)
+
+STORAGE_PATH = Paths.Storage.DOCKER if IS_IN_DOCKER else STORAGE_PATHS.get(system())
+STORAGE_PATH.mkdir(parents=True, exist_ok=True)
 
 UI_PATH = Path('/ui/') if IS_IN_DOCKER else Path('../ui/build/')
 SQLITE_DB_PATH = STORAGE_PATH / 'db.sqlite3'
