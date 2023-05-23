@@ -2,7 +2,7 @@ import threading
 from dataclasses import dataclass
 from typing import Optional
 
-from persistqueue import SQLiteAckQueue, Empty
+from persistqueue.sqlackqueue import SQLiteAckQueue, Empty
 
 from paths import SQLITE_TASKS_PATH
 
